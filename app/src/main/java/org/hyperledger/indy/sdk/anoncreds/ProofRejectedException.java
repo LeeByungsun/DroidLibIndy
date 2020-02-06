@@ -14,8 +14,8 @@ public class ProofRejectedException extends IndyException
 	/**
 	 * Initializes a new ProofRejectionException.
 	 */
-	public ProofRejectedException() 
-    {
-    	super(message, ErrorCode.AnoncredsProofRejected.value());
-    }
+	public ProofRejectedException()
+	{
+		super(message, ErrorCode.AnoncredsProofRejected.value());
+	}
 }

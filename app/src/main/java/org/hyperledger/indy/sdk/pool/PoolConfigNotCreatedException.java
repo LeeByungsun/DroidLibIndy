@@ -14,8 +14,8 @@ public class PoolConfigNotCreatedException extends IndyException
 	/**
 	 * Initializes a new PoolConfigNotCreatedException.
 	 */
-	public PoolConfigNotCreatedException() 
-    {
-    	super(message, ErrorCode.PoolLedgerNotCreatedError.value());
-    }
+	public PoolConfigNotCreatedException()
+	{
+		super(message, ErrorCode.PoolLedgerNotCreatedError.value());
+	}
 }

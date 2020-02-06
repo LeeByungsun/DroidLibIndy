@@ -14,8 +14,8 @@ public class LedgerSecurityException extends IndyException
 	/**
 	 * Initializes a new LedgerSecurityException.
 	 */
-	public LedgerSecurityException() 
-    {
-    	super(message, ErrorCode.LedgerSecurityError.value());
-    }
+	public LedgerSecurityException()
+	{
+		super(message, ErrorCode.LedgerSecurityError.value());
+	}
 }

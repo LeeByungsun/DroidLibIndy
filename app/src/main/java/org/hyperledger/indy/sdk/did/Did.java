@@ -8,12 +8,10 @@ import org.hyperledger.indy.sdk.LibIndy;
 import org.hyperledger.indy.sdk.ParamGuard;
 import org.hyperledger.indy.sdk.pool.Pool;
 import org.hyperledger.indy.sdk.did.DidResults.CreateAndStoreMyDidResult;
-import org.hyperledger.indy.sdk.did.DidResults.EncryptResult;
 import org.hyperledger.indy.sdk.did.DidResults.EndpointForDidResult;
 import org.hyperledger.indy.sdk.wallet.Wallet;
 
 import com.sun.jna.Callback;
-import com.sun.jna.Pointer;
 
 /**
  * did.rs API
@@ -41,7 +39,7 @@ public class Did extends IndyJava.API {
 		public void callback(int xcommand_handle, int err, String did, String verkey) {
 
 			CompletableFuture<CreateAndStoreMyDidResult> future = (CompletableFuture<CreateAndStoreMyDidResult>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			CreateAndStoreMyDidResult result = new CreateAndStoreMyDidResult(did, verkey);
 			future.complete(result);
@@ -57,7 +55,7 @@ public class Did extends IndyJava.API {
 		public void callback(int xcommand_handle, int err, String verkey) {
 
 			CompletableFuture<String> future = (CompletableFuture<String>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			String result = verkey;
 			future.complete(result);
@@ -73,7 +71,7 @@ public class Did extends IndyJava.API {
 		public void callback(int xcommand_handle, int err) {
 
 			CompletableFuture<Void> future = (CompletableFuture<Void>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			Void result = null;
 			future.complete(result);
@@ -89,7 +87,7 @@ public class Did extends IndyJava.API {
 		public void callback(int xcommand_handle, int err) {
 
 			CompletableFuture<Void> future = (CompletableFuture<Void>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			Void result = null;
 			future.complete(result);
@@ -105,7 +103,7 @@ public class Did extends IndyJava.API {
 		public void callback(int xcommand_handle, int err, String key) {
 
 			CompletableFuture<String> future = (CompletableFuture<String>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			String result = key;
 			future.complete(result);
@@ -121,7 +119,7 @@ public class Did extends IndyJava.API {
 		public void callback(int xcommand_handle, int err, String key) {
 
 			CompletableFuture<String> future = (CompletableFuture<String>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			String result = key;
 			future.complete(result);
@@ -137,7 +135,7 @@ public class Did extends IndyJava.API {
 		public void callback(int xcommand_handle, int err) {
 
 			CompletableFuture<Void> future = (CompletableFuture<Void>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			Void result = null;
 			future.complete(result);
@@ -153,7 +151,7 @@ public class Did extends IndyJava.API {
 		public void callback(int xcommand_handle, int err, String endpoint, String transport_vk) {
 
 			CompletableFuture<EndpointForDidResult> future = (CompletableFuture<EndpointForDidResult>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			EndpointForDidResult result = new EndpointForDidResult(endpoint, transport_vk);
 			future.complete(result);
@@ -169,7 +167,7 @@ public class Did extends IndyJava.API {
 		public void callback(int xcommand_handle, int err) {
 
 			CompletableFuture<Void> future = (CompletableFuture<Void>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			Void result = null;
 			future.complete(result);
@@ -185,7 +183,7 @@ public class Did extends IndyJava.API {
 		public void callback(int xcommand_handle, int err, String metadata) {
 
 			CompletableFuture<String> future = (CompletableFuture<String>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			String result = metadata;
 			future.complete(result);
@@ -201,9 +199,25 @@ public class Did extends IndyJava.API {
 		public void callback(int xcommand_handle, int err, String verkey) {
 
 			CompletableFuture<String> future = (CompletableFuture<String>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			String result = verkey;
+			future.complete(result);
+		}
+	};
+
+	/**
+	 * Callback used when qualifyDid completes.
+	 */
+	private static Callback qualifyDidCb = new Callback() {
+
+		@SuppressWarnings({"unused", "unchecked"})
+		public void callback(int xcommand_handle, int err, String did) {
+
+			CompletableFuture<String> future = (CompletableFuture<String>) removeFuture(xcommand_handle);
+			if (! checkResult(future, err)) return;
+
+			String result = did;
 			future.complete(result);
 		}
 	};
@@ -222,6 +236,18 @@ public class Did extends IndyJava.API {
 	 *
 	 * @param wallet  The wallet.
 	 * @param didJson Identity information as json.
+	 * {
+	 *     "did": string, (optional;
+	 *             if not provided and cid param is false then the first 16 bit of the verkey will be used as a new DID;
+	 *             if not provided and cid is true then the full verkey will be used as a new DID;
+	 *             if provided, then keys will be replaced - key rotation use case)
+	 *     "seed": string, (optional) Seed that allows deterministic did creation (if not set random one will be created).
+	 *                                Can be UTF-8, base64 or hex string.
+	 *     "crypto_type": string, (optional; if not set then ed25519 curve is used;
+	 *               currently only 'ed25519' value is supported for this field)
+	 *     "cid": bool, (optional; if not set then false is used;)
+	 *     "method_name": string, (optional) method name to create fully qualified did.
+	 * }
 	 * @return A future that resolves to a CreateAndStoreMyDidResult containing did and verkey.
 	 * @throws IndyException Thrown if an error occurs when calling the underlying SDK.
 	 */
@@ -243,7 +269,7 @@ public class Did extends IndyJava.API {
 				didJson,
 				createAndStoreMyDidCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -278,7 +304,7 @@ public class Did extends IndyJava.API {
 				identityJson,
 				replaceKeysStartCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -309,16 +335,24 @@ public class Did extends IndyJava.API {
 				did,
 				replaceKeysApplyCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
 
 	/**
 	 * Saves their DID for a pairwise connection in a secured Wallet so that it can be used to verify transaction.
+	 * Updates DID associated verkey in case DID already exists in the Wallet.
 	 *
 	 * @param wallet       The wallet.
 	 * @param identityJson Identity information as json.
+	 *     {
+	 *        "did": string, (required)
+	 *        "verkey": string
+	 *                     - optional is case of adding a new DID, and DID is cryptonym: did == verkey,
+	 *                     - mandatory in case of updating an existing DID
+	 *     }
+	 *
 	 * @return A future that does not resolve any value.
 	 * @throws IndyException Thrown if an error occurs when calling the underlying SDK.
 	 */
@@ -340,7 +374,7 @@ public class Did extends IndyJava.API {
 				identityJson,
 				storeTheirDidCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -387,7 +421,7 @@ public class Did extends IndyJava.API {
 				did,
 				keyForDidCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -426,7 +460,7 @@ public class Did extends IndyJava.API {
 				did,
 				keyForLocalDidCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -465,7 +499,7 @@ public class Did extends IndyJava.API {
 				transportKey,
 				setEndpointForDidCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -501,7 +535,7 @@ public class Did extends IndyJava.API {
 				did,
 				getEndpointForDidCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -536,7 +570,7 @@ public class Did extends IndyJava.API {
 				metadata,
 				setDidMetadataCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -567,7 +601,7 @@ public class Did extends IndyJava.API {
 				did,
 				getDidMetadataCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -580,6 +614,7 @@ public class Did extends IndyJava.API {
 	 * @return A future resolving to a did data: {
 	 *     "did": string - DID stored in the wallet,
 	 *     "verkey": string - The DIDs transport key (ver key, key id),
+	 *     "tempVerkey": string - Future DIDs transport key (ver key, key id), after rotation of keys is done.
 	 *     "metadata": string - The meta information stored with the DID
 	 *   }
 	 * @throws IndyException Thrown if an error occurs when calling the underlying SDK.
@@ -602,7 +637,7 @@ public class Did extends IndyJava.API {
 				did,
 				getDidMetadataCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -633,7 +668,7 @@ public class Did extends IndyJava.API {
 				walletHandle,
 				getDidMetadataCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -662,7 +697,45 @@ public class Did extends IndyJava.API {
 				verkey,
 				getAttrVerkeyCb);
 
-		checkResult(result);
+		checkResult(future, result);
+
+		return future;
+	}
+
+	/**
+	 * Update DID stored in the wallet to make fully qualified, or to do other DID maintenance.
+	 *     - If the DID has no method, a method will be appended (prepend did:peer to a legacy did)
+	 *     - If the DID has a method, a method will be updated (migrate did:peer to did:peer-new)
+	 *
+	 * Update DID related entities stored in the wallet.
+	 *
+	 * @param wallet The wallet.
+	 * @param did The target DID stored in the wallet.
+	 * @param method The method to apply to the DID.
+	 * @return A future resolving to a fully qualified did
+	 * @throws IndyException Thrown if an error occurs when calling the underlying SDK.
+	 */
+	public static CompletableFuture<String> qualifyDid(
+			Wallet wallet,
+			String did,
+			String method) throws IndyException {
+
+		ParamGuard.notNullOrWhiteSpace(did, "did");
+		ParamGuard.notNull(method, "method");
+
+		CompletableFuture<String> future = new CompletableFuture<String>();
+		int commandHandle = addFuture(future);
+
+		int walletHandle = wallet.getWalletHandle();
+
+		int result = LibIndy.api.indy_qualify_did(
+				commandHandle,
+				walletHandle,
+				did,
+				method,
+				getDidMetadataCb);
+
+		checkResult(future, result);
 
 		return future;
 	}

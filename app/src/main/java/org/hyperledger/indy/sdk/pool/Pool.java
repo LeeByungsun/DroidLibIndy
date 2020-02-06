@@ -49,7 +49,7 @@ public class Pool extends IndyJava.API implements AutoCloseable {
 		public void callback(int xcommand_handle, int err, int pool_handle) {
 
 			CompletableFuture<Pool> future = (CompletableFuture<Pool>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			Pool pool = new Pool(pool_handle);
 
@@ -67,7 +67,7 @@ public class Pool extends IndyJava.API implements AutoCloseable {
 		public void callback(int xcommand_handle, int err) {
 
 			CompletableFuture<Void> future = (CompletableFuture<Void>) removeFuture(xcommand_handle);
-			if (! checkCallback(future, err)) return;
+			if (! checkResult(future, err)) return;
 
 			Void result = null;
 			future.complete(result);
@@ -101,7 +101,7 @@ public class Pool extends IndyJava.API implements AutoCloseable {
 				config,
 				voidCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -115,9 +115,15 @@ public class Pool extends IndyJava.API implements AutoCloseable {
 	 * {
 	 *     "timeout": int (optional), timeout for network request (in sec).
 	 *     "extended_timeout": int (optional), extended timeout for network request (in sec).
-	 *     "preordered_nodes": array[string] -  (optional), names of nodes which will have a priority during request sending:
-	 *         [ "name_of_1st_prior_node",  "name_of_2nd_prior_node", .... ]
-	 *         Note: Not specified nodes will be placed in a random way.
+	 *     "preordered_nodes": array(string) -  (optional), names of nodes which will have a priority during request sending:
+	 *          ["name_of_1st_prior_node",  "name_of_2nd_prior_node", .... ]
+	 *          This can be useful if a user prefers querying specific nodes.
+	 *          Assume that `Node1` and `Node2` nodes reply faster.
+	 *          If you pass them Libindy always sends a read request to these nodes first and only then (if not enough) to others.
+	 *          Note: Nodes not specified will be placed randomly.
+	 *     "number_read_nodes": int (optional) - the number of nodes to send read requests (2 by default)
+	 *          By default Libindy sends a read requests to 2 nodes in the pool.
+	 *          If response isn't received or `state proof` is invalid Libindy sends the request again but to 2 (`number_read_nodes`) * 2 = 4 nodes and so far until completion.
 	 * }
 	 *
 	 * @return A future that resolves to an opened Pool instance.
@@ -138,7 +144,7 @@ public class Pool extends IndyJava.API implements AutoCloseable {
 				config, 
 				openPoolLedgerCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -165,7 +171,7 @@ public class Pool extends IndyJava.API implements AutoCloseable {
 				handle,
 				voidCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -192,7 +198,7 @@ public class Pool extends IndyJava.API implements AutoCloseable {
 				handle,
 				voidCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -217,7 +223,7 @@ public class Pool extends IndyJava.API implements AutoCloseable {
 				configName,
 				voidCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}
@@ -232,7 +238,7 @@ public class Pool extends IndyJava.API implements AutoCloseable {
 	 *
 	 * @param protocolVersion Protocol version will be used:
 	 *      1 - for Indy Node 1.3
-	 *      2 - for Indy Node 1.4
+	 *      2 - for Indy Node 1.4 and greater
 	 *
 	 * @return A future that does not resolve a value.
 	 * @throws IndyException Thrown if an error occurs when calling the underlying SDK.
@@ -248,7 +254,7 @@ public class Pool extends IndyJava.API implements AutoCloseable {
 				protocolVersion,
 				voidCb);
 
-		checkResult(result);
+		checkResult(future, result);
 
 		return future;
 	}

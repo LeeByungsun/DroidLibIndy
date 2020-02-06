@@ -14,8 +14,8 @@ public class UnknownWalletTypeException extends IndyException
 	/**
 	 * Initializes a new UnknownWalletTypeException.
 	 */
-	public UnknownWalletTypeException() 
-    {
-    	super(message, ErrorCode.WalletUnknownTypeError.value());
-    }
+	public UnknownWalletTypeException()
+	{
+		super(message, ErrorCode.WalletUnknownTypeError.value());
+	}
 }

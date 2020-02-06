@@ -14,8 +14,8 @@ public class WrongWalletForPoolException extends IndyException
 	/**
 	 * Initializes a new WrongWalletForPoolException.
 	 */
-	public WrongWalletForPoolException() 
-    {
-    	super(message, ErrorCode.WalletIncompatiblePoolError.value());
-    }
+	public WrongWalletForPoolException()
+	{
+		super(message, ErrorCode.WalletIncompatiblePoolError.value());
+	}
 }

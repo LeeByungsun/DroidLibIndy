@@ -15,7 +15,7 @@ public class DidAlreadyExistsException extends IndyException
 	 * Initializes a new DidAlreadyExistsError.
 	 */
 	public DidAlreadyExistsException()
-    {
-    	super(message, ErrorCode.DidAlreadyExistsError.value());
-    }
+	{
+		super(message, ErrorCode.DidAlreadyExistsError.value());
+	}
 }

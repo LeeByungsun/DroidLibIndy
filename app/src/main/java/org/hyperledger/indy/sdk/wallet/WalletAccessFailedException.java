@@ -14,8 +14,7 @@ public class WalletAccessFailedException extends IndyException
 	/**
 	 * Initializes a new WalletAccessFailedException.
 	 */
-	public WalletAccessFailedException()
-    {
-    	super(message, ErrorCode.WalletAccessFailed.value());
-    }
+	public WalletAccessFailedException() {
+		super(message, ErrorCode.WalletAccessFailed.value());
+	}
 }

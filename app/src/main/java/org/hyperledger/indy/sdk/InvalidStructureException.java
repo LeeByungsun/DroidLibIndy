@@ -11,8 +11,8 @@ public class InvalidStructureException extends IndyException
 	/**
 	 * Initializes a new InvalidStructureException.
 	 */
-	public InvalidStructureException() 
-    {
-    	super(message, ErrorCode.CommonInvalidStructure.value());
-    }
+	public InvalidStructureException()
+	{
+		super(message, ErrorCode.CommonInvalidStructure.value());
+	}
 }

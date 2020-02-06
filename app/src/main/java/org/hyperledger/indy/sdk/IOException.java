@@ -11,8 +11,8 @@ public class IOException extends IndyException
 	/**
 	 * Initializes a new IOException.
 	 */
-	public IOException() 
-    {
-    	super(message, ErrorCode.CommonIOError.value());
-    }
+	public IOException()
+	{
+		super(message, ErrorCode.CommonIOError.value());
+	}
 }

@@ -15,7 +15,7 @@ public class WalletDecodingException extends IndyException
 	 * Initializes a new WalletDecodingException.
 	 */
 	public WalletDecodingException()
-    {
-    	super(message, ErrorCode.WalletDecodingError.value());
-    }
+	{
+		super(message, ErrorCode.WalletDecodingError.value());
+	}
 }

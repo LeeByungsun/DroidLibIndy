@@ -14,8 +14,8 @@ public class ConsensusException extends IndyException
 	/**
 	 * Initializes a new ConsensusException.
 	 */
-	public ConsensusException() 
-    {
-    	super(message, ErrorCode.LedgerNoConsensusError.value());
-    }
+	public ConsensusException()
+	{
+		super(message, ErrorCode.LedgerNoConsensusError.value());
+	}
 }
